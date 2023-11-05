@@ -1,4 +1,4 @@
-import { formatBalance } from "../../format/currency";
+import { formatHex } from "../../format/currency";
 
 type Props = {
   balance: string;
@@ -6,7 +6,7 @@ type Props = {
 };
 
 const Balance = ({ balance, className }: Props) => {
-  return <p className={className}>{formatBalance(balance)}</p>;
+  return <p className={className}>{formatHex(balance)}</p>;
 };
 
 export { Balance };

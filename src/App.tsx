@@ -6,6 +6,7 @@ import { Balance } from "./components/Balance";
 import { Button } from "./components/Button";
 import { Heading, Title } from "./components/Typography";
 import { getBalance, getChainId } from "./metamask/api";
+import { Loading } from "./components/Loading";
 
 type Wallet = {
   chainId: string;
@@ -21,6 +22,7 @@ function App() {
     balance: "",
   });
   const [account, setAccount] = useState<string>();
+  const [loading, setLoading] = useState(false);
 
   const terminate = () => {
     sdk?.terminate();
@@ -36,11 +38,15 @@ function App() {
         return;
       }
 
+      setLoading(true);
+
       try {
         const balance = (await getBalance(provider, account)) || "0x0";
         setWallet((wallet) => ({ ...wallet, balance }));
+        setLoading(false);
       } catch (e) {
         console.log("update balance err", e);
+        setLoading(false);
       }
     };
 
@@ -139,8 +145,12 @@ function App() {
           ) : (
             <p>No accounts</p>
           )}
-          {wallet?.balance && (
-            <Balance balance={wallet.balance} className="p-1 mt-4 text-3xl" />
+          {loading ? (
+            <Loading className={`mx-auto mt-4 w-fit`} />
+          ) : (
+            wallet?.balance && (
+              <Balance balance={wallet.balance} className="p-1 mt-4 text-3xl" />
+            )
           )}
         </>
       )}
