@@ -5,7 +5,7 @@ import { AccountList } from "./components/AccountList";
 import { Balance } from "./components/Balance";
 import { Button } from "./components/Button";
 import { Heading, Title } from "./components/Typography";
-import { getBalance, getChainId } from "./metamask/api";
+import { getAccounts, getBalance, getChainId } from "./metamask/api";
 import { Loading } from "./components/Loading";
 
 type Wallet = {
@@ -45,7 +45,7 @@ function App() {
         setWallet((wallet) => ({ ...wallet, balance }));
         setLoading(false);
       } catch (e) {
-        console.log("update balance err", e);
+        console.log("Update balance error: ", e);
         setLoading(false);
       }
     };
@@ -74,7 +74,7 @@ function App() {
         const chainId = await getChainId(provider);
         setWallet({ accounts, balance, chainId: chainId! });
       } catch (e) {
-        console.log("balance err", e);
+        console.log("Get balance error", e);
       }
     };
 
@@ -91,9 +91,7 @@ function App() {
     };
 
     const init = async () => {
-      const accounts = await provider.request({
-        method: "eth_accounts",
-      });
+      const accounts = await getAccounts(provider);
 
       if (Array.isArray(accounts)) {
         refreshAccounts(accounts);
@@ -126,25 +124,21 @@ function App() {
             {wallet?.chainId && `Connected chain: ${wallet.chainId}`}
           </Title>
           <Heading>Accounts</Heading>
-          {wallet?.accounts ? (
-            <AccountList
-              accounts={wallet.accounts}
-              listClassName="w-fit mx-auto"
-              listItemRender={(accountId) => (
-                <li
-                  key={accountId}
-                  onClick={() => setAccount(accountId)}
-                  className={`p-1 px-4 cursor-pointer rounded-md hover:bg-slate-200${
-                    account === accountId ? " bg-blue-200" : ""
-                  }`}
-                >
-                  {accountId}
-                </li>
-              )}
-            />
-          ) : (
-            <p>No accounts</p>
-          )}
+          <AccountList
+            accounts={wallet?.accounts}
+            listClassName="w-fit mx-auto"
+            listItemRender={(accountId) => (
+              <li
+                key={accountId}
+                onClick={() => setAccount(accountId)}
+                className={`p-1 px-4 cursor-pointer rounded-md hover:bg-slate-200${
+                  account === accountId ? " bg-blue-200" : ""
+                }`}
+              >
+                {accountId}
+              </li>
+            )}
+          />
           {loading ? (
             <Loading className={`mx-auto mt-4 w-fit`} />
           ) : (
