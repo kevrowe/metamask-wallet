@@ -1,3 +1,5 @@
-export const formatHex = (hexValue: string) => {
-    return (parseInt(hexValue) / 1000000000000000000).toFixed(2)
+import {ethers} from 'ethers'
+
+export const formatHexToEth = (hexValue: string) => {
+    return ethers.formatUnits(hexValue, 'ether')
 }
